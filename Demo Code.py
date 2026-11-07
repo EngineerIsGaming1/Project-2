@@ -6,7 +6,7 @@ import sys # In order to terminate the program
 #(AF_INET is used for IPv4 protocols)
 #(SOCK_STREAM is used for TCP)
 serverSocket = socket(AF_INET, SOCK_STREAM)
-
+serverHost = '73.60.44.178'
 # Assign a port number
 serverPort = 6789
 
@@ -22,6 +22,7 @@ while True:
 
     # Set up a new connection from the client
     connectionSocket, addr = serverSocket.accept()
+    print('Server connected to: ' + addr[0])
 
     # If an exception occurs during the execution of try clause
     # the rest of the clause is skipped
@@ -34,23 +35,29 @@ while True:
         # Extract the path of the requested object from the message
         # The path is the second part of HTTP header, identified by [1]
         filename = message.split()[1]
+        print('Message is: \n' + filename)
 
         # Because the extracted path of the HTTP request includes
         # a character '\', we read the path from the second character
-        f = open(filename[1:])
+        f = open(filename[1:], "rb")
 
         # Store the entire contenet of the requested file in a temporary buffer
         outputdata = f.read()
+        sizeHeader = len(outputdata).to_bytes(4, byteorder='big')
 
         # Send the HTTP response header line to the connection socket
         connectionSocket.send("HTTP/1.1 200 OK\r\n\r\n".encode())
 
+        connectionSocket.sendall(sizeHeader)
+        connectionSocket.send("\r\n".encode())
+
+
         # Send the content of the requested file to the connection socket
-        for i in range(0, len(outputdata)):
-            connectionSocket.send(outputdata[i].encode())
+        connectionSocket.sendall(outputdata)
         connectionSocket.send("\r\n".encode())
 
         # Close the client connection socket
+        print('Closing connection with: ' + addr[0])
         connectionSocket.close()
 
     except IOError:
