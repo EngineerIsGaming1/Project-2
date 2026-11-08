@@ -35,6 +35,9 @@ def receiveMessage(inputMessage):
         # print("Message body is: " + messageBody)
 
         accountsFile = open("Accounts.txt")
+        successFile = open("Successes.txt")
+        failFile = open("Fails.txt")
+
         for i in accountsFile:
             if messageBody in i:
                 userAccess = "Granted"
@@ -42,9 +45,15 @@ def receiveMessage(inputMessage):
         if userAccess == "Granted":
             fileName = "login_success.html"
             fileType, _ = mimetypes.guess_type("login_success.html")
+            successNumber = int(successFile.read()) + 1
+            successFile = open("Successes.txt", "w")
+            successFile.write(str(successNumber))
         else:
             fileName = "login_failed.html"
             fileType, _ = mimetypes.guess_type("login_failed.html")
+            failNumber = int(failFile.read()) + 1
+            failFile = open("Fails.txt", "w")
+            failFile.write(str(failNumber))
     
     elif messageType == "GET":
         if socketMessage == "/":
