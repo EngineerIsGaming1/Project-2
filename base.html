@@ -4,7 +4,19 @@
 		<title>EE-0129 Project 2</title>
 	</head>
 	<body>
+        <!-- Color picker gives user "Red" or "Green" as a dropdown select -->
+        <!-- The default method for the <form> function is GET, not POST -->
 		<h1>EE 129 Project 2 Color Picker!</h1>
-        <p>Please choose your color: </p>
+        <form>
+            <!-- "for = []" in the <label> binds label to a <select> with "id = []"  -->
+            <!-- clicking the label text will focus the dropdown menu created by the corresponding <select> with the same id-->
+            <label for="colorDropdown">Please choose your color: </label>
+            <select name = "pickedColor" id = "colorDropdown">
+                <option value = "red">Red</option>
+                <option value = "green">Green</option>
+            </select>
+            <!-- since form method is GET, will append user choice of red/green to URL after submit pressed -->
+            <input type = "submit" value = "Submit">
+        </form>
 	</body>
 </html>

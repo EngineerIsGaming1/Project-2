@@ -16,21 +16,51 @@ def notFound(inputSocket):
     return
 
 # receieveMessage function. Takes http response, separates the header, then analyzes the body.
-# if the message is "/" returns "base.html". Otherwise, returns the mimetypes guess_type output
+# if the message is "/" returns "base.html" and its mimetype. 
+# Otherwise, returns actual message and the mimetypes guess_type output
 def receiveMessage(inputMessage):
     # Extract the path of the requested object from the message
     # The path is the second part of HTTP header, identified by [1]
     socketMessage = inputMessage.split()[1]
+    messageType = inputMessage.split()[0]
+    # print("Message is: " + socketMessage)
+    # print("Message type: " + messageType)
+    
+    # print(inputMessage)
     # print('Message is: ' + socketMessage + '\n')
 
-    if socketMessage == "/":
-        fileName = "base.html"
-        fileType, _ = mimetypes.guess_type("base.html")
-    else:
-        # use mimetypes to find out the filetype extension
-        # guess_type outputs tuple (type, encoding). Only "type" is relevant here
-        fileType, _ = mimetypes.guess_type(socketMessage)
-        fileName = socketMessage[1:]
+    if messageType == "POST":
+        userAccess = "Denied"
+        messageBody = inputMessage.split("\r\n\r\n", 1)[1]
+        # print("Message body is: " + messageBody)
+
+        accountsFile = open("Accounts.txt")
+        for i in accountsFile:
+            if messageBody in i:
+                userAccess = "Granted"
+
+        if userAccess == "Granted":
+            fileName = "login_success.html"
+            fileType, _ = mimetypes.guess_type("login_success.html")
+        else:
+            fileName = "login_failed.html"
+            fileType, _ = mimetypes.guess_type("login_failed.html")
+    
+    elif messageType == "GET":
+        if socketMessage == "/":
+            fileName = "base.html"
+            fileType, _ = mimetypes.guess_type("base.html")
+        elif "green" in  socketMessage:
+            fileName = "green.html"
+            fileType, _ = mimetypes.guess_type("green.html")
+        elif "red" in socketMessage:
+            fileName = "red.html"
+            fileType, _ = mimetypes.guess_type("red.html")
+        else:
+            # use mimetypes to find out the filetype extension
+            # guess_type outputs tuple (type, encoding). Only "type" is relevant here
+            fileType, _ = mimetypes.guess_type(socketMessage)
+            fileName = socketMessage[1:]
 
     # print(fileName + "\n" + str(fileType) + "\n")
     return (fileName, fileType)
