@@ -1,2 +1,2 @@
-usernameInput=admin&passwordInput=admin
 usernameInput=username&passwordInput=password
+usernameInput=admin&passwordInput=admin
